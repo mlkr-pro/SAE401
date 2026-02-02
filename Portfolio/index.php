@@ -257,6 +257,10 @@
 					</ul>
 
 				</div>
+
+				<div style="text-align: center; margin-top: 20px;">
+                	<a href="Admin/login.php" class="button small icon solid fa-lock">Espace Admin</a>
+            	</div>
 			</div>
 
 		<!-- Scripts -->
