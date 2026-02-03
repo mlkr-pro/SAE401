@@ -33,6 +33,34 @@ if (isset($_POST['connecter'])) {
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <link rel="stylesheet" href="../assets/css/main.css" />
+		<style>
+            html, body {
+                height: 100%;
+                overflow: hidden;
+            }
+            body.is-preload, body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding-bottom: 5%;
+            }
+            #main {
+                padding: 0 !important;
+                margin: 0;
+                width: 100%;
+            }
+            header.major {
+                margin-bottom: 2em !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+            header.major:before, header.major:after {
+                display: none !important;
+            }
+            .box.container.medium {
+                margin-bottom: 0 !important;
+            }
+        </style>
 	</head>
 	<body class="is-preload">
 
