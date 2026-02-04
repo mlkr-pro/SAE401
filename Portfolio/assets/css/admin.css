@@ -1,0 +1,109 @@
+html.admin-login, body.admin-login {
+    height: 100%;
+    overflow: hidden;
+}
+
+body.admin-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 5%;
+}
+
+.admin-login #main {
+    padding: 0 !important;
+    margin: 0;
+    width: 100%;
+}
+
+.admin-login header.major {
+    margin-bottom: 2em !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.admin-login header.major:before, 
+.admin-login header.major:after {
+    display: none !important;
+}
+
+.admin-login .box.container.medium {
+    margin-bottom: 0 !important;
+}
+
+.admin-block { 
+    background: rgba(224, 224, 224, 0.15); 
+    padding: 2em; 
+    margin-bottom: 3em; 
+    border-radius: 4px; 
+    overflow: hidden; 
+}
+
+.social-row { 
+    padding: 1em 0; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); 
+}
+.social-row:last-child { 
+    border-bottom: none; 
+}
+
+.table-header {
+    margin-bottom: 0.5em; 
+    font-size: 0.8em; 
+    text-transform: uppercase; 
+    color: #aaa;
+}
+
+.network-label {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-weight: bold;
+    color: #5b5b5b;
+}
+.network-label .icon { 
+    margin-right: 0.5em; 
+}
+
+.action-btn { 
+    color: #ff4444; 
+    border-bottom: none; 
+    font-size: 1.2em; 
+}
+.action-btn:hover { 
+    color: #cc0000; 
+}
+
+.msg-success {
+    color: green; 
+    font-weight: bold; 
+    text-align: center; 
+    margin-bottom: 2em;
+}
+
+.msg-error {
+    color: #ff4444; 
+    text-align: center; 
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.text-center { 
+    text-align: center; 
+}
+
+.text-right { 
+    text-align: right; 
+}
+
+.mt-1 { 
+    margin-top: 1em; 
+}
+
+.mt-2 { 
+    margin-top: 2em; 
+}
+
+.btn-wide {
+    min-width: 22em;
+}

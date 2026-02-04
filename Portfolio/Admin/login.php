@@ -33,79 +33,46 @@ if (isset($_POST['connecter'])) {
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <link rel="stylesheet" href="../assets/css/main.css" />
-		<style>
-            html, body {
-                height: 100%;
-                overflow: hidden;
-            }
-            body.is-preload, body {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding-bottom: 5%;
-            }
-            #main {
-                padding: 0 !important;
-                margin: 0;
-                width: 100%;
-            }
-            header.major {
-                margin-bottom: 2em !important;
-                padding: 0 !important;
-                border: none !important;
-            }
-            header.major:before, header.major:after {
-                display: none !important;
-            }
-            .box.container.medium {
-                margin-bottom: 0 !important;
-            }
-        </style>
+        <link rel="stylesheet" href="../assets/css/admin.css" />
 	</head>
-	<body class="is-preload">
+	<body class="is-preload admin-login">
 
-		<div id="main">
+        <div id="main">
+            <header class="major container medium">
+                <h2>Espace Admin</h2>
+                <p>Connexion au Portfolio</p>
+            </header>
 
-				<header class="major container medium">
-					<h2>Espace Membre</h2>
-					<p>Identification requise pour accéder au Back-Office</p>
-				</header>
+            <div class="box container medium">
+                <?php if($erreur): ?>
+                    <p class="msg-error"><?php echo $erreur; ?></p>
+                <?php endif; ?>
 
-				<div class="box container medium">
-                    
-                    <?php if($erreur): ?>
-                        <p style="color: #ff4444; text-align: center; font-weight: bold;">
-                            <?php echo $erreur; ?>
-                        </p>
-                    <?php endif; ?>
+                <form method="post" action="login.php">
+                    <div class="row gtr-50">
+                        <div class="col-12">
+                            <label for="login">Identifiant</label>
+                            <input type="text" name="login" id="login" placeholder="Votre identifiant" required />
+                        </div>
+                        <div class="col-12">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" name="password" id="password" placeholder="Votre mot de passe" required />
+                        </div>
+                        <div class="col-12">
+                            <ul class="actions special">
+                                <li><input type="submit" name="connecter" value="Se connecter" /></li>
+                                <li><a href="../index.php" class="button alt">Retour au site</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-					<form method="post" action="login.php">
-						<div class="row gtr-50">
-							<div class="col-12">
-								<label for="login">Identifiant</label>
-								<input type="text" name="login" id="login" placeholder="Votre identifiant" required />
-							</div>
-							<div class="col-12">
-								<label for="password">Mot de passe</label>
-								<input type="password" name="password" id="password" placeholder="Votre mot de passe" required />
-							</div>
-							<div class="col-12">
-								<ul class="actions special">
-									<li><input type="submit" name="connecter" value="Se connecter" /></li>
-                                    <li><a href="index.php" class="button alt">Retour au site</a></li>
-								</ul>
-							</div>
-						</div>
-					</form>
-                    
-				</div>
-			</div>
-
-		<script src="../assets/js/jquery.min.js"></script>
-			<script src="../assets/js/browser.min.js"></script>
-			<script src="../assets/js/breakpoints.min.js"></script>
-			<script src="../assets/js/util.js"></script>
-			<script src="../assets/js/main.js"></script>
-
-	</body>
+        <script src="../assets/js/jquery.min.js"></script>
+        <script src="../assets/js/browser.min.js"></script>
+        <script src="../assets/js/breakpoints.min.js"></script>
+        <script src="../assets/js/util.js"></script>
+        <script src="../assets/js/main.js"></script>
+    </body>
 </html>

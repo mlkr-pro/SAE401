@@ -58,33 +58,7 @@ $result = mysqli_query($link, $sql);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/css/main.css" />
-    <style>
-        .action-btn { color: #ff4444; border-bottom: none; font-size: 1.2em; }
-        .action-btn:hover { color: #cc0000; }
-        
-        .social-row { 
-            padding: 1em 0; 
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        .social-row:last-child { border-bottom: none; }
-        
-        .admin-block { 
-            background: rgba(224, 224, 224, 0.15); 
-            padding: 2em; 
-            margin-bottom: 3em;
-            border-radius: 4px; 
-            overflow: hidden; 
-        }
-
-        .network-label {
-            display: flex;
-            align-items: center;
-            height: 100%;
-            font-weight: bold;
-            color: #5b5b5b;
-        }
-        .network-label .icon { margin-right: 0.5em; }
-    </style>
+    <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
 <body class="is-preload">
 
@@ -100,7 +74,7 @@ $result = mysqli_query($link, $sql);
     <div id="main">
         <div class="box container">
             
-            <?php if($message) echo "<p style='color:green; font-weight:bold; text-align:center; margin-bottom:2em;'>$message</p>"; ?>
+            <?php if($message) echo "<p class='msg-success'>$message</p>"; ?>
 
             <div class="admin-block">
                 <header>
@@ -110,10 +84,10 @@ $result = mysqli_query($link, $sql);
 
                 <form method="post" action="dashboard.php">
                     
-                    <div class="row gtr-50" style="margin-bottom: 0.5em; font-size: 0.8em; text-transform: uppercase; color: #aaa;">
+                    <div class="row gtr-50 table-header">
                         <div class="col-3 col-12-mobilep">Réseau</div>
                         <div class="col-8 col-12-mobilep">Lien URL</div>
-                        <div class="col-1 col-12-mobilep" style="text-align: center;">Action</div>
+                        <div class="col-1 col-12-mobilep text-center">Action</div>
                     </div>
 
                     <?php
@@ -130,7 +104,7 @@ $result = mysqli_query($link, $sql);
                                 <div class="col-8 col-12-mobilep">
                                     <input type="text" name="urls[<?php echo $row['id']; ?>]" value="<?php echo htmlspecialchars($row['url']); ?>" />
                                 </div>
-                                <div class="col-1 col-12-mobilep" style="text-align: center;">
+                                <div class="col-1 col-12-mobilep text-center">
                                     <a href="dashboard.php?delete=<?php echo $row['id']; ?>" 
                                        class="icon solid fa-trash action-btn" 
                                        onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');"
@@ -141,14 +115,14 @@ $result = mysqli_query($link, $sql);
                     <?php
                         }
                     } else {
-                        echo "<p style='text-align:center; padding:2em;'>Aucun réseau configuré.</p>";
+                        echo "<p class='text-center' style='padding:2em;'>Aucun réseau configuré.</p>";
                     }
                     ?>
                     
                     <?php if (mysqli_num_rows($result) > 0): ?>
                     <div class="row">
-                        <div class="col-12" style="text-align: right; margin-top: 2em;">
-                            <input type="submit" name="update_socials" value="Enregistrer les modifications" style="min-width: 22em;" />
+                        <div class="col-12 text-right mt-2">
+                            <input type="submit" name="update_socials" value="Enregistrer les modifications" class="btn-wide" />
                         </div>
                     </div>
                     <?php endif; ?>
@@ -170,8 +144,8 @@ $result = mysqli_query($link, $sql);
                             <input type="text" name="new_url" placeholder="URL (https://...)" required />
                         </div>
         
-                        <div class="col-12" style="text-align: right; margin-top: 1em;">
-                            <input type="submit" name="add_social" value="Ajouter" style="min-width: 22em;" />
+                        <div class="col-12 text-right mt-1">
+                            <input type="submit" name="add_social" value="Ajouter" class="btn-wide" />
                         </div>
                     </div>
                 </form>
