@@ -14,7 +14,9 @@
 	<body class="is-preload">
 
     <?php
-    require_once 'includes/socials.php';
+	require_once 'includes/db_config.php';
+	require_once 'includes/project/front_display.php';
+    require_once 'includes/socials/socials.php';
     ?>
 
 		<!-- Header -->
@@ -47,7 +49,10 @@
 				</header>
 
 				<div class="box alt container">
-					<section class="feature left">
+					<?php
+					afficherProjets($link);
+					?>
+					<!-- <section class="feature left">
 						<a href="projet.html" class="image icon solid fa-signal"><img src="images/pic01.jpg" alt="" /></a>
 						<div class="content">
 							<h3>SAÉ 303 • Data-visualisation</h3>
@@ -67,7 +72,7 @@
 							<h3>SAÉ 105 • Site Vitrine</h3>
 							<p>L'objectif de cette SAÉ était de réaliser un site web complet comportant six pages. Le défi principal a été d'intégrer un formulaire en PHP fonctionnel permettant d'envoyer les informations saisies directement par mail au destinataire.</p>
 						</div>
-					</section>
+					</section> -->
 				</div>
 
 				<!--

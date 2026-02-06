@@ -107,3 +107,54 @@ body.admin-login {
 .btn-wide {
     min-width: 22em;
 }
+
+.accordion-header {
+    background-color: #f1f1f1;
+    color: #444;
+    cursor: pointer;
+    padding: 1.5em;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    font-weight: bold;
+    font-size: 1.2em;
+    border-radius: 4px;
+    margin-bottom: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.accordion-header:hover, .accordion-header.active {
+    background-color: #ddd;
+}
+
+.accordion-header:after {
+    content: '\002B'; /* Signe + */
+    font-weight: bold;
+    font-size: 1.5em;
+    float: right;
+    margin-left: 5px;
+}
+
+.accordion-header.active:after {
+    content: "\2212"; /* Signe - */
+}
+
+.accordion-panel {
+    padding: 0 1em;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    margin-bottom: 1em;
+    border-radius: 0 0 4px 4px;
+}
+
+.accordion-panel.open {
+    padding: 2em 1em;
+    border: 1px solid #ddd;
+    border-top: none;
+}
