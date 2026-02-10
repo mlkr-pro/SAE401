@@ -1,5 +1,4 @@
 <?php
-session_start();
 require '../includes/db_config.php';
 
 $erreur = "";

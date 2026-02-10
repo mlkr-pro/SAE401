@@ -1,4 +1,16 @@
 <?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'guest') {
+        header("Location: dashboard_guest.php");
+    } else {
+        header("Location: dashboard.php");
+    }
+    exit();
+}
+
+$erreur = "";
+
 if (isset($_POST['connecter'])) {
     $login = mysqli_real_escape_string($link, $_POST['login']);
     $pass = $_POST['password'];
@@ -10,8 +22,13 @@ if (isset($_POST['connecter'])) {
         if (password_verify($pass, $row['password'])) {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
+            $_SESSION['role'] = $row['role'];
             
-            header("Location: dashboard.php");
+            if ($row['role'] === 'guest') {
+                header("Location: dashboard_guest.php");
+            } else {
+                header("Location: dashboard.php");
+            }
             exit();
         } else {
             $erreur = "Mot de passe incorrect.";
