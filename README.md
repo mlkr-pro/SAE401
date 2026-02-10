@@ -44,8 +44,8 @@ Le projet est hébergé et accessible directement via votre navigateur.
 
 Pour accéder à l'interface de gestion (Back Office), il faut s'authentifier :
 
-* **Login** (Défini dans la BDD) **:** admin
-* **Mot de passe** (Hashé en BDD via `password_verify`) **:** admin
+* **Login** (Défini dans la BDD) **:** guest
+* **Mot de passe** (Hashé en BDD via `password_verify`) **:** guest1234
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
