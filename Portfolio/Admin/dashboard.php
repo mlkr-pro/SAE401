@@ -4,6 +4,12 @@ require '../includes/db_config.php';
 require '../includes/auth/security.php';
 
 $message = "";
+if (isset($_GET['msg'])) {
+    if ($_GET['msg'] == 'deleted') $message = "Projet supprimé avec succès !";
+    if ($_GET['msg'] == 'updated') $message = "Le projet a été mis à jour avec succès !";
+    if ($_GET['msg'] == 'skill_added') $message = "Compétence ajoutée !";
+    if ($_GET['msg'] == 'skill_deleted') $message = "Compétence supprimée !";
+}
 
 // Inclusion du CRUD
 // Porject
@@ -11,6 +17,12 @@ require '../includes/project/create.php'; // Ajouter avec upload d'images
 require '../includes/project/read.php'; // Lire les projets
 require '../includes/project/delete.php'; // Supprimer
 require '../includes/categories/read.php'; // Catégories
+
+// Compétences
+require '../includes/skills/create.php'; // Ajouter
+require '../includes/skills/update.php'; // Modifier
+require '../includes/skills/read.php'; // Lire
+require '../includes/skills/delete.php'; // Supprimer
 
 // Socials
 require '../includes/socials/delete.php'; // Supprimer
@@ -134,8 +146,88 @@ require '../includes/socials/read.php'; // Lire
                         </div>
                     </form>
                 </div>
+            </div> 
 
-            </div> <button class="accordion-header">Gestion des Réseaux Sociaux</button>
+            <button class="accordion-header">Gestion des Compétences</button>
+            <div class="accordion-panel">
+                <div class="admin-block" style="margin-top: 2em;">
+                    <header>
+                        <h3>Mes Compétences</h3>
+                    </header>
+                    <form method="post" action="dashboard.php">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 15%; text-align: left;">Ordre</th>
+                                        <th style="width: 45%; text-align: left;">Compétence</th>
+                                        <th style="width: 25%; text-align: left;">Niveau (%)</th>
+                                        <th style="width: 15%; text-align: center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if (mysqli_num_rows($result_skills) > 0) {
+                                        mysqli_data_seek($result_skills, 0);
+                                        while ($skill = mysqli_fetch_assoc($result_skills)) {
+                                    ?>
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                <input type="text" name="skills[<?php echo $skill['id']; ?>][order]" value="<?php echo htmlspecialchars($skill['display_order']); ?>" pattern="^[0-9]+$" title="Veuillez saisir un nombre" required />
+                                            </td>
+                                            <td style="text-align: left;">
+                                                <input type="text" name="skills[<?php echo $skill['id']; ?>][name]" value="<?php echo htmlspecialchars($skill['skill_name']); ?>" required />
+                                            </td>
+                                            <td style="text-align: left;">
+                                                <input type="text" name="skills[<?php echo $skill['id']; ?>][level]" value="<?php echo htmlspecialchars($skill['level']); ?>" pattern="^(100|[1-9]?[0-9])$" required />
+                                            </td>
+                                            <td style="text-align: center;">
+                                                <a href="dashboard.php?delete_skill=<?php echo $skill['id']; ?>" class="icon solid fa-trash" style="color:#ff4444; border-bottom:none; text-decoration:none;" onclick="return confirm('Supprimer cette compétence ?');"></a>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='4' class='text-center'>Aucune compétence.</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php if (mysqli_num_rows($result_skills) > 0): ?>
+                        <div class="row">
+                            <div class="col-12 text-right mt-2">
+                                <input type="submit" name="update_skills" value="Enregistrer les modifications" class="btn-wide" />
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </form>
+                </div>
+
+                <div class="admin-block">
+                    <header>
+                        <h3>Ajouter une compétence</h3>
+                    </header>
+                    <form method="post" action="dashboard.php">
+                        <div class="row gtr-50">
+                            <div class="col-3 col-12-mobilep">
+                                <input type="text" name="skill_order" placeholder="Ordre d'affichage" pattern="^[0-9]+$" title="Veuillez saisir un nombre" required />
+                            </div>
+                            <div class="col-5 col-12-mobilep">
+                                <input type="text" name="skill_name" placeholder="Nom (ex: HTML...)" required />
+                            </div>
+                            <div class="col-4 col-12-mobilep">
+                                <input type="text" name="skill_level" placeholder="Niveau en %" pattern="^(100|[1-9]?[0-9])$" required />
+                            </div>
+                            <div class="col-12 text-right mt-1">
+                                <input type="submit" name="add_skill" value="Ajouter" class="btn-wide primary" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <button class="accordion-header">Gestion des Réseaux Sociaux</button>
             <div class="accordion-panel">
                 <div class="admin-block" style="margin-top: 2em;">
                     <header>

@@ -17,6 +17,7 @@
 	require_once 'includes/db_config.php';
 	require_once 'includes/project/front_display.php';
     require_once 'includes/socials/socials.php';
+	require_once 'includes/skills/front_display.php';
     ?>
 
 		<!-- Header -->
@@ -47,6 +48,8 @@
 					etiam vivamus nunc nibh morbi.</p>
 					-->
 				</header>
+
+				<?php afficherSkills($link); ?>
 
 				<div class="box alt container">
 					<?php

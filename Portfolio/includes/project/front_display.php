@@ -28,7 +28,7 @@ function afficherProjets($link) {
 
             echo '
             <section class="feature ' . $position . '">
-                <a href="projet.php?id=' . $id . '" class="image icon solid fa-code">
+                <a href="project.php?id=' . $id . '" class="image icon solid fa-code">
                     <img src="' . $image . '" alt="' . $titre . '" style="object-fit:cover; height:100%;" />
                 </a>
                 <div class="content">

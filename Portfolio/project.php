@@ -19,7 +19,6 @@ $sql_projet = "
     LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.id = $id_projet
 ";
-
 $result_projet = mysqli_query($link, $sql_projet);
 $projet = mysqli_fetch_assoc($result_projet);
 
@@ -30,13 +29,10 @@ if (!$projet) {
 
 $sql_images = "SELECT image_url FROM project_images WHERE project_id = $id_projet";
 $result_images = mysqli_query($link, $sql_images);
-
-// On stocke les images dans un tableau pour les utiliser plus bas
 $images = [];
 while ($row_img = mysqli_fetch_assoc($result_images)) {
     $images[] = $row_img['image_url'];
 }
-
 ?>
 
 <!DOCTYPE HTML>
@@ -56,7 +52,6 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
     </div>
 
     <div id="main">
-
         <section class="one">
             <div class="container">
                 <header class="major">
@@ -70,25 +65,17 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
                 <?php if (!empty($images)): ?>
                     <div class="box alt">
                         <div class="row gtr-50 uniform">
-                            <?php 
-                            // Si on a une seule image, on l'affiche en grand
-                            if (count($images) == 1): 
-                            ?>
+                            <?php if (count($images) == 1): ?>
                                 <div class="col-12">
                                     <span class="image fit"><img src="<?php echo htmlspecialchars($images[0]); ?>" alt="" /></span>
                                 </div>
-                            <?php 
-                            // Si on en a plusieurs, on fait une grille
-                            else: 
-                                foreach ($images as $img_path):
-                            ?>
-                                <div class="col-6 col-12-mobilep">
-                                    <span class="image fit"><img src="<?php echo htmlspecialchars($img_path); ?>" alt="" /></span>
-                                </div>
-                            <?php 
-                                endforeach; 
-                            endif; 
-                            ?>
+                            <?php else: ?>
+                                <?php foreach ($images as $img_path): ?>
+                                    <div class="col-6 col-12-mobilep">
+                                        <span class="image fit"><img src="<?php echo htmlspecialchars($img_path); ?>" alt="" /></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -100,16 +87,13 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
                 <div class="col-12" style="margin-top: 3em;">
                     <ul class="actions">
                         <li><a href="index.php" class="button">Retour à l'accueil</a></li>
-                        
                         <?php if (!empty($projet['project_link'])): ?>
                             <li><a href="<?php echo htmlspecialchars($projet['project_link']); ?>" class="button primary" target="_blank">Voir le site en ligne</a></li>
                         <?php endif; ?>
                     </ul>
                 </div>
-
             </div>
         </section>
-
     </div>
 
     <div id="footer">
@@ -119,8 +103,6 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
     </div>
 
     <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/jquery.scrolly.min.js"></script>
-    <script src="assets/js/jquery.scrollex.min.js"></script>
     <script src="assets/js/browser.min.js"></script>
     <script src="assets/js/breakpoints.min.js"></script>
     <script src="assets/js/util.js"></script>
