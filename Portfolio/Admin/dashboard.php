@@ -5,13 +5,23 @@ require '../includes/auth/security.php';
 
 $message = "";
 if (isset($_GET['msg'])) {
-    if ($_GET['msg'] == 'deleted') $message = "Projet supprimé avec succès !";
-    if ($_GET['msg'] == 'updated') $message = "Le projet a été mis à jour avec succès !";
+    if ($_GET['msg'] == 'intro_updated') $message = "Introduction mise à jour !";
+    if ($_GET['msg'] == 'hero_updated') $message = "En-tête mis à jour !";
     if ($_GET['msg'] == 'skill_added') $message = "Compétence ajoutée !";
     if ($_GET['msg'] == 'skill_deleted') $message = "Compétence supprimée !";
+    if ($_GET['msg'] == 'deleted') $message = "Projet supprimé avec succès !";
+    if ($_GET['msg'] == 'updated') $message = "Le projet a été mis à jour avec succès !";
 }
 
 // Inclusion du CRUD
+// Hero
+require '../includes/hero/update.php'; // Modifier
+require '../includes/hero/read.php'; // Lire
+
+// Intro
+require '../includes/intro_section/update.php'; // Modifier
+require '../includes/intro_section/read.php'; // Lire
+
 // Porject
 require '../includes/project/create.php'; // Ajouter avec upload d'images
 require '../includes/project/read.php'; // Lire les projets
@@ -54,6 +64,69 @@ require '../includes/socials/read.php'; // Lire
     <div id="main">
         <div class="box container">
             <?php if($message) echo "<p class='msg-success'>$message</p>"; ?>
+
+            <button class="accordion-header">Gestion de l'En-tête (Hero)</button>
+            <div class="accordion-panel">
+                <div class="admin-block" style="margin-top: 2em;">
+                    <header>
+                        <h3>Modifier la présentation</h3>
+                    </header>
+                    <form method="post" action="dashboard.php" enctype="multipart/form-data">
+                        <div class="row gtr-50">
+                            <div class="col-12">
+                                <label>Titre principal</label>
+                                <input type="text" name="title" value="<?php echo htmlspecialchars($hero['title']); ?>" required />
+                            </div>
+                            <div class="col-12">
+                                <label>Sous-titre (Ligne 1)</label>
+                                <input type="text" name="subtitle" value="<?php echo htmlspecialchars($hero['subtitle']); ?>" required />
+                            </div>
+                            <div class="col-12">
+                                <label>Description (Lignes suivantes)</label>
+                                <textarea name="description" rows="4" required><?php echo htmlspecialchars($hero['description']); ?></textarea>
+                            </div>
+                            <div class="col-6 col-12-mobilep">
+                                <label>Nouvelle photo de profil (Optionnel)</label>
+                                <input type="file" name="profile_pic" accept="image/*" />
+                                <p style="font-size:0.8em; color:#888;">Actuelle : <?php echo htmlspecialchars($hero['profile_pic']); ?></p>
+                            </div>
+                            <div class="col-6 col-12-mobilep">
+                                <label>Nouveau CV (Optionnel, format PDF)</label>
+                                <input type="file" name="cv_link" accept=".pdf" />
+                                <p style="font-size:0.8em; color:#888;">Actuel : <?php echo htmlspecialchars($hero['cv_link']); ?></p>
+                            </div>
+                            <div class="col-12 text-right mt-1">
+                                <input type="submit" name="update_hero" value="Mettre à jour" class="btn-wide primary" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <button class="accordion-header">Gestion de l'Introduction</button>
+            <div class="accordion-panel">
+                <div class="admin-block" style="margin-top: 2em;">
+                    <header>
+                        <h3>Modifier l'introduction (Objectif)</h3>
+                    </header>
+                    <form method="post" action="dashboard.php">
+                        <div class="row gtr-50">
+                            <div class="col-12">
+                                <label>Titre (Retours à la ligne autorisés)</label>
+                                <textarea name="title" rows="3" required><?php echo htmlspecialchars($intro['title']); ?></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label>Description (Optionnelle)</label>
+                                <textarea name="description" rows="3"><?php echo htmlspecialchars($intro['description']); ?></textarea>
+                            </div>
+                            <div class="col-12 text-right mt-1">
+                                <input type="submit" name="update_intro" value="Mettre à jour" class="btn-wide primary" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <button class="accordion-header">Gestion des Projets</button>
             <div class="accordion-panel">
                 <div class="admin-block" style="margin-top: 2em;">

@@ -18,10 +18,22 @@
 	require_once 'includes/project/front_display.php';
     require_once 'includes/socials/socials.php';
 	require_once 'includes/skills/front_display.php';
+	require_once 'includes/hero/read.php';
+	require_once 'includes/intro_section/read.php';
     ?>
 
 		<!-- Header -->
-			<div id="header">
+		<div id="header">
+			<img src="<?php echo htmlspecialchars($hero['profile_pic']); ?>" alt="Photo de profile" class="PP-icon">
+			<h1><?php echo htmlspecialchars($hero['title']); ?></h1>
+			<p><?php echo htmlspecialchars($hero['subtitle']); ?>
+			<br />
+			<?php echo nl2br(htmlspecialchars($hero['description'])); ?></p>
+			<ul class="actions special">
+				<li><a href="<?php echo htmlspecialchars($hero['cv_link']); ?>" class="button icon solid fa-download" target="_blank">Télécharger mon CV</a></li>
+			</ul>
+		</div>
+			<!-- <div id="header">
 				<img src="images/Profile_Picture.jpg" alt="Photo de profile" class="PP-icon">
 				<h1>HELLO WORLD</h1>
 				<p>Je suis Malo, étudiant en 2ème année de BUT MMI.
@@ -32,22 +44,28 @@
 				<ul class="actions special">
                     <li><a href="images/CV LE CAER Malo.pdf" class="button icon solid fa-download" target="_blank">Télécharger mon CV</a></li>
                 </ul>
-			</div>
+			</div> -->
 
 		<!-- Main -->
 			<div id="main">
-
 				<header class="major container medium">
+					<h2><?php echo nl2br(htmlspecialchars($intro['title'])); ?></h2>
+                    <?php if(!empty($intro['description'])): ?>
+					    <p><?php echo nl2br(htmlspecialchars($intro['description'])); ?></p>
+                    <?php endif; ?>
+				</header>
+
+				<!-- <header class="major container medium">
 					<h2>Mon objectif ?
 					<br />
 					Devenir un développeur Fullstack
 					<br />
 					capable de gérer un projet de A à Z</h2>
-					<!--
+					
 					<p>Tellus erat mauris ipsum fermentum<br />
 					etiam vivamus nunc nibh morbi.</p>
-					-->
-				</header>
+					
+				</header> -->
 
 				<?php afficherSkills($link); ?>
 

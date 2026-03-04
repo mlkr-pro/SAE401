@@ -34,7 +34,7 @@ function afficherProjets($link) {
                 <div class="content">
                     <h3>' . $titre . ' <span style="font-size:0.6em; color:#888;">' . $categorie . '</span></h3>
                     <p>' . $description . '</p>
-                    <a href="projet.php?id=' . $id . '" class="button small">Voir le détail</a>
+                    <a href="project.php?id=' . $id . '" class="button small">Voir le détail</a>
                 </div>
             </section>
             ';
