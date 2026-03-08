@@ -12,6 +12,7 @@ if (isset($_GET['msg'])) {
     if ($_GET['msg'] == 'deleted') $message = "Projet supprimé avec succès !";
     if ($_GET['msg'] == 'updated') $message = "Le projet a été mis à jour avec succès !";
     if ($_GET['msg'] == 'project_added') $message = "Projet ajouté avec succès !";
+    if ($_GET['msg'] == 'message_replied') $message = "Réponse envoyée avec succès !";
 }
 
 // Inclusion du CRUD
@@ -23,17 +24,21 @@ require '../includes/hero/read.php'; // Lire
 require '../includes/intro_section/update.php'; // Modifier
 require '../includes/intro_section/read.php'; // Lire
 
+// Compétences
+require '../includes/skills/create.php'; // Ajouter
+require '../includes/skills/update.php'; // Modifier
+require '../includes/skills/read.php'; // Lire
+require '../includes/skills/delete.php'; // Supprimer
+
 // Porject
 //require '../includes/project/create.php'; // Ajouter avec upload d'images
 require '../includes/project/read.php'; // Lire les projets
 require '../includes/project/delete.php'; // Supprimer
 require '../includes/categories/read.php'; // Catégories
 
-// Compétences
-require '../includes/skills/create.php'; // Ajouter
-require '../includes/skills/update.php'; // Modifier
-require '../includes/skills/read.php'; // Lire
-require '../includes/skills/delete.php'; // Supprimer
+// Messages
+require '../includes/messages/delete.php'; // Supprimer
+require '../includes/messages/read.php'; // Lire
 
 // Socials
 require '../includes/socials/delete.php'; // Supprimer
@@ -66,9 +71,57 @@ require '../includes/socials/read.php'; // Lire
         <div class="box container">
             <?php if($message) echo "<p class='msg-success'>$message</p>"; ?>
 
-            <button class="accordion-header">Gestion de l'En-tête (Hero)</button>
+            <button class="accordion-header">Boîte de réception (Messages)</button>
             <div class="accordion-panel">
-                <div class="admin-block" style="margin-top: 2em;">
+                <div class="admin-block mt-2">
+                    <header>
+                        <h3>Messages reçus depuis le site</h3>
+                    </header>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="w-15 text-left">Date</th>
+                                    <th class="w-25 text-left">Expéditeur</th>
+                                    <th class="w-50 text-left">Message</th>
+                                    <th class="w-10 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                if (mysqli_num_rows($result_messages) > 0) {
+                                    while ($msg = mysqli_fetch_assoc($result_messages)) {
+                                        $date_formatee = date('d/m/Y H:i', strtotime($msg['date_sent']));
+                                ?>
+                                    <tr>
+                                        <td class="text-left"><?php echo $date_formatee; ?></td>
+                                        <td class="text-left">
+                                            <strong><?php echo htmlspecialchars($msg['name']); ?></strong><br>
+                                            <a href="mailto:<?php echo htmlspecialchars($msg['email']); ?>" class="link-muted"><?php echo htmlspecialchars($msg['email']); ?></a>
+                                        </td>
+                                        <td class="text-left text-small">
+                                            <?php echo nl2br(htmlspecialchars($msg['message'])); ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="reply.php?id=<?php echo $msg['id']; ?>" class="icon solid fa-reply action-btn btn-reply" title="Répondre"></a>
+                                            <a href="dashboard.php?delete_message=<?php echo $msg['id']; ?>" class="icon solid fa-trash action-btn btn-delete" onclick="return confirm('Supprimer ce message ?');" title="Supprimer"></a>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='4' class='text-center'>Aucun message reçu.</td></tr>";
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <button class="accordion-header">Gestion de l'en-tête (Hero)</button>
+            <div class="accordion-panel">
+                <div class="admin-block mt-2">
                     <header>
                         <h3>Modifier la présentation</h3>
                     </header>
@@ -89,12 +142,12 @@ require '../includes/socials/read.php'; // Lire
                             <div class="col-6 col-12-mobilep">
                                 <label>Nouvelle photo de profil (Optionnel)</label>
                                 <input type="file" name="profile_pic" accept="image/*" />
-                                <p style="font-size:0.8em; color:#888;">Actuelle : <?php echo htmlspecialchars($hero['profile_pic']); ?></p>
+                                <p class="file-hint">Actuelle : <?php echo htmlspecialchars($hero['profile_pic']); ?></p>
                             </div>
                             <div class="col-6 col-12-mobilep">
                                 <label>Nouveau CV (Optionnel, format PDF)</label>
                                 <input type="file" name="cv_link" accept=".pdf" />
-                                <p style="font-size:0.8em; color:#888;">Actuel : <?php echo htmlspecialchars($hero['cv_link']); ?></p>
+                                <p class="file-hint">Actuel : <?php echo htmlspecialchars($hero['cv_link']); ?></p>
                             </div>
                             <div class="col-12 text-right mt-1">
                                 <input type="submit" name="update_hero" value="Mettre à jour" class="btn-wide primary" />
@@ -104,9 +157,9 @@ require '../includes/socials/read.php'; // Lire
                 </div>
             </div>
 
-            <button class="accordion-header">Gestion de l'Introduction</button>
+            <button class="accordion-header">Gestion de l'introduction</button>
             <div class="accordion-panel">
-                <div class="admin-block" style="margin-top: 2em;">
+                <div class="admin-block mt-2">
                     <header>
                         <h3>Modifier l'introduction (Objectif)</h3>
                     </header>
@@ -128,20 +181,20 @@ require '../includes/socials/read.php'; // Lire
                 </div>
             </div>
 
-            <button class="accordion-header">Gestion des Projets</button>
+            <button class="accordion-header">Gestion des projets</button>
             <div class="accordion-panel">
-                <div class="admin-block" style="margin-top: 2em;">
+                <div class="admin-block mt-2">
                     <header>
-                        <h3>Mes Projets existants</h3>
+                        <h3>Mes projets existants</h3>
                     </header>
                     <div class="table-wrapper">
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 15%; text-align: left;">Date</th>
-                                    <th style="width: 40%; text-align: left;">Titre</th>
-                                    <th style="width: 30%; text-align: left;">Catégorie</th>
-                                    <th style="width: 15%; text-align:center;">Action</th>
+                                    <th class="w-15 text-left">Date</th>
+                                    <th class="w-40 text-left">Titre</th>
+                                    <th class="w-30 text-left">Catégorie</th>
+                                    <th class="w-15 text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -152,12 +205,12 @@ require '../includes/socials/read.php'; // Lire
                                         $cat = $projet['category_name'] ? $projet['category_name'] : "Aucune";
                                 ?>
                                     <tr>
-                                        <td style="text-align: left;"><?php echo $date->format('d/m/Y'); ?></td>
-                                        <td style="text-align: left;"><strong><?php echo htmlspecialchars($projet['title']); ?></strong></td>
-                                        <td style="text-align: left;"><strong><?php echo htmlspecialchars($cat); ?></strong></td>
-                                        <td style="text-align:center;">
-                                            <a href="edition.php?id=<?php echo $projet['id']; ?>" class="icon solid fa-pen" style="color:#4CAF50; margin-right: 15px; border-bottom:none; text-decoration:none;" title="Modifier"></a>
-                                            <a href="dashboard.php?delete_project=<?php echo $projet['id']; ?>" class="icon solid fa-trash" style="color:#ff4444; border-bottom:none; text-decoration:none;" onclick="return confirm('Voulez-vous vraiment supprimer ce projet ?');"></a>
+                                        <td class="text-left"><?php echo $date->format('d/m/Y'); ?></td>
+                                        <td class="text-left"><strong><?php echo htmlspecialchars($projet['title']); ?></strong></td>
+                                        <td class="text-left"><strong><?php echo htmlspecialchars($cat); ?></strong></td>
+                                        <td class="text-center">
+                                            <a href="edition.php?id=<?php echo $projet['id']; ?>" class="icon solid fa-pen action-btn btn-edit" title="Modifier"></a>
+                                            <a href="dashboard.php?delete_project=<?php echo $projet['id']; ?>" class="icon solid fa-trash action-btn btn-delete" onclick="return confirm('Voulez-vous vraiment supprimer ce projet ?');"></a>
                                         </td>
                                     </tr>
                                 <?php
@@ -193,7 +246,7 @@ require '../includes/socials/read.php'; // Lire
                                         }
                                     }
                                     ?>
-                                    <option value="0" style="font-weight:bold; color:#e44c65;">+ Nouvelle catégorie...</option>
+                                    <option value="0" class="option-new-cat">+ Nouvelle catégorie...</option>
                                 </select>
                             </div>
 
@@ -209,14 +262,14 @@ require '../includes/socials/read.php'; // Lire
                                 <input type="text" name="project_link" placeholder="Lien vers le site (http://...)" />
                             </div>
                             <div class="col-12">
-                                <label style="font-size:0.8em; color:#888; margin-bottom: 5px; display:block;">Images du projet (Drag & Drop) - <span style="color:#e44c65;">Format 16/9 recommandé</span></label>
-                                <div id="drop-area" style="border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.02);">
-                                    <p style="margin: 0; pointer-events: none;"><i class="icon solid fa-cloud-upload-alt fa-2x"></i><br>Glissez-déposez vos images ici<br>ou cliquez pour parcourir</p>
+                                <label class="drop-label">Images du projet (Drag & Drop) - <span class="text-highlight">Format 16/9 recommandé</span></label>
+                                <div id="drop-area" class="drop-area">
+                                    <p><i class="icon solid fa-cloud-upload-alt fa-2x"></i><br>Glissez-déposez vos images ici<br>ou cliquez pour parcourir</p>
                                     <input type="file" id="fileElem" multiple accept="image/*" style="display:none;">
                                 </div>
-                                <p id="file-count" style="text-align:center; font-size:0.8em; color:#4CAF50; margin-top:10px; font-weight:bold;"></p>
+                                <p id="file-count" class="file-count"></p>
                                 
-                                <div id="preview-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; max-height: 350px; overflow-y: auto; padding: 10px; border: 1px solid #eee; border-radius: 8px;"></div>
+                                <div id="preview-container" class="preview-grid"></div>
                             </div>
                             <div class="col-12 text-right mt-1">
                                 <input type="submit" value="Publier le projet" class="btn-wide primary" />
@@ -226,21 +279,21 @@ require '../includes/socials/read.php'; // Lire
                 </div>
             </div>
 
-            <button class="accordion-header">Gestion des Compétences</button>
+            <button class="accordion-header">Gestion des compétences</button>
             <div class="accordion-panel">
-                <div class="admin-block" style="margin-top: 2em;">
+                <div class="admin-block mt-2">
                     <header>
-                        <h3>Mes Compétences</h3>
+                        <h3>Mes compétences</h3>
                     </header>
                     <form method="post" action="dashboard.php">
                         <div class="table-wrapper">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th style="width: 15%; text-align: left;">Ordre</th>
-                                        <th style="width: 45%; text-align: left;">Compétence</th>
-                                        <th style="width: 25%; text-align: left;">Niveau (%)</th>
-                                        <th style="width: 15%; text-align: center;">Action</th>
+                                        <th class="w-15 text-left">Ordre</th>
+                                        <th class="w-45 text-left">Compétence</th>
+                                        <th class="w-25 text-left">Niveau (%)</th>
+                                        <th class="w-15 text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -250,17 +303,17 @@ require '../includes/socials/read.php'; // Lire
                                         while ($skill = mysqli_fetch_assoc($result_skills)) {
                                     ?>
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td class="text-left">
                                                 <input type="text" name="skills[<?php echo $skill['id']; ?>][order]" value="<?php echo htmlspecialchars($skill['display_order']); ?>" pattern="^[0-9]+$" title="Veuillez saisir un nombre" required />
                                             </td>
-                                            <td style="text-align: left;">
+                                            <td class="text-left">
                                                 <input type="text" name="skills[<?php echo $skill['id']; ?>][name]" value="<?php echo htmlspecialchars($skill['skill_name']); ?>" required />
                                             </td>
-                                            <td style="text-align: left;">
+                                            <td class="text-left">
                                                 <input type="text" name="skills[<?php echo $skill['id']; ?>][level]" value="<?php echo htmlspecialchars($skill['level']); ?>" pattern="^(100|[1-9]?[0-9])$" required />
                                             </td>
-                                            <td style="text-align: center;">
-                                                <a href="dashboard.php?delete_skill=<?php echo $skill['id']; ?>" class="icon solid fa-trash" style="color:#ff4444; border-bottom:none; text-decoration:none;" onclick="return confirm('Supprimer cette compétence ?');"></a>
+                                            <td class="text-center">
+                                                <a href="dashboard.php?delete_skill=<?php echo $skill['id']; ?>" class="icon solid fa-trash action-btn btn-delete" onclick="return confirm('Supprimer cette compétence ?');"></a>
                                             </td>
                                         </tr>
                                     <?php
@@ -305,9 +358,9 @@ require '../includes/socials/read.php'; // Lire
                 </div>
             </div>
             
-            <button class="accordion-header">Gestion des Réseaux Sociaux</button>
+            <button class="accordion-header">Gestion des réseaux sociaux</button>
             <div class="accordion-panel">
-                <div class="admin-block" style="margin-top: 2em;">
+                <div class="admin-block mt-2">
                     <header>
                         <h3>Modifier les réseaux existants</h3>
                     </header>
@@ -334,14 +387,13 @@ require '../includes/socials/read.php'; // Lire
                                         <input type="text" name="urls[<?php echo $row['id']; ?>]" value="<?php echo htmlspecialchars($row['url']); ?>" />
                                     </div>
                                     <div class="col-1 col-12-mobilep text-center">
-                                        <a href="dashboard.php?delete=<?php echo $row['id']; ?>" class="icon solid fa-trash action-btn" onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');"title="Supprimer">
-                                        </a>
+                                        <a href="dashboard.php?delete=<?php echo $row['id']; ?>" class="icon solid fa-trash action-btn btn-delete" onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');" title="Supprimer"></a>
                                     </div>
                                 </div>
                         <?php
                             }
                         } else {
-                            echo "<p class='text-center' style='padding:2em;'>Aucun réseau configuré.</p>";
+                            echo "<p class='text-center p-4'>Aucun réseau configuré.</p>";
                         }
                         ?>
                         
@@ -381,7 +433,7 @@ require '../includes/socials/read.php'; // Lire
 
     <div id="footer">
         <ul class="copyright">
-            <li>&copy; Back-Office Malo.</li>
+            <li>&copy; LE CAER MALO - Tout droit réservé.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
         </ul>
     </div>
 
@@ -401,7 +453,7 @@ require '../includes/socials/read.php'; // Lire
             });
         }
 
-        // Gestion du champ "Nouvelle Catégorie"
+        // Gestion du champ "Nouvelle catégorie"
         function toggleCustomCategory() {
             var selectBox = document.getElementById("category_select");
             var customInput = document.getElementById("custom_cat_container");
@@ -432,10 +484,10 @@ require '../includes/socials/read.php'; // Lire
         });
 
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#e44c65', false);
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
         });
         ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#ccc', false);
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
         });
 
         dropArea.addEventListener('drop', handleDrop, false);
@@ -461,25 +513,25 @@ require '../includes/socials/read.php'; // Lire
 
                 reader.onloadend = () => {
                     const div = document.createElement('div');
-                    div.className = 'img-card';
-                    div.style = 'border: 1px solid #ccc; padding: 10px; border-radius: 8px; text-align: center; background: #fff; position:relative;';
+                    div.className = 'preview-card';
                     
                     const img = document.createElement('img');
                     img.src = reader.result;
-                    img.style = 'width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 5px;';
+                    img.className = 'preview-img';
                     
                     const removeBtn = document.createElement('button');
                     removeBtn.innerHTML = '&times;';
-                    removeBtn.style = 'position:absolute; top:-10px; right:-10px; background:#ff4444; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; padding:0;';
+                    removeBtn.className = 'btn-remove-preview';
                     removeBtn.onclick = (e) => {
                         e.preventDefault();
                         removeDroppedFile(index);
                     };
 
                     const labelCover = document.createElement('label');
-                    labelCover.style = 'font-size: 0.8em; color: #4CAF50; cursor:pointer; display:block;';
+                    labelCover.className = 'label-cover';
+                    
                     if(index === coverIndex) {
-                        labelCover.style.fontWeight = 'bold';
+                        labelCover.classList.add('is-cover');
                         labelCover.innerHTML = '<i class="icon solid fa-star"></i> Couverture';
                     } else {
                         labelCover.innerHTML = '<i class="icon regular fa-star"></i> En couverture';
@@ -519,7 +571,7 @@ require '../includes/socials/read.php'; // Lire
             submitBtn.value = "Publication en cours...";
             submitBtn.disabled = true;
 
-            fetch('../includes/project/create.php', {
+            fetch('../includes/project/ajax_create.php', {
                 method: 'POST',
                 body: formData
             })

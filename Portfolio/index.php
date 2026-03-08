@@ -20,6 +20,47 @@
 	require_once 'includes/skills/front_display.php';
 	require_once 'includes/hero/read.php';
 	require_once 'includes/intro_section/read.php';
+
+	// Traitement du formulaire de contact
+	$contact_status = "";
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_contact'])) {
+        $name = mysqli_real_escape_string($link, $_POST['name']);
+        $email = mysqli_real_escape_string($link, $_POST['email']);
+        $msg = mysqli_real_escape_string($link, $_POST['message']);
+        
+        if (!empty($name) && !empty($email) && !empty($msg)) {
+            $sql = "INSERT INTO messages (name, email, message) VALUES ('$name', '$email', '$msg')";
+            if (mysqli_query($link, $sql)) {
+                $admin_email = "malolkr.pro@gmail.com";
+                $website_email = "lecaer@alwaysdata.net";
+                
+                // 1. Alerte pour l'administrateur
+                $subject_admin = "Nouveau message de $name via le Portfolio";
+                $body_admin = "Tu as reçu un nouveau message sur ton portfolio !\n\nNom : $name\nEmail : $email\n\nMessage :\n$msg\n\n(Tu peux y répondre depuis ton Espace Admin).";
+                $headers_admin = "From: Portfolio Malo <$website_email>\r\n";
+                $headers_admin .= "Reply-To: $email\r\n";
+                $headers_admin .= "MIME-Version: 1.0\r\n";
+                $headers_admin .= "Content-Type: text/plain; charset=utf-8\r\n";
+                $headers_admin .= "X-Mailer: PHP/" . phpversion();
+
+                mail($admin_email, $subject_admin, $body_admin, $headers_admin);
+
+                // Confirmation pour l'utilisateur
+                $subject_user = "Confirmation de reception - Portfolio Malo";
+                $body_user = "Bonjour $name,\n\nJ'ai bien recu votre message et je vous en remercie. Je vous repondrai dans les plus brefs delais.\n\nRappel de votre message :\n$msg\n\nCordialement,\nLE CAER Malo.";
+                $headers_user = "From: Malo Le Caer <$website_email>\r\n";
+                $headers_user .= "MIME-Version: 1.0\r\n";
+                $headers_user .= "Content-Type: text/plain; charset=utf-8\r\n";
+                $headers_user .= "X-Mailer: PHP/" . phpversion();
+
+                mail($email, $subject_user, $body_user, $headers_user);
+
+                $contact_status = "<p style='color:#008004; text-align:center; font-weight:bold;'>Votre message a été envoyé avec succès !</p>";
+            } else {
+                $contact_status = "<p style='color:#ff4444; text-align:center;'>Erreur lors de l'envoi du message.</p>";
+            }
+        }
+    }
     ?>
 
 		<!-- Header -->
@@ -249,7 +290,26 @@
 						<h2>Une question ?</h2>
 					</header>
 
-					<form method="post" action="#">
+					<form method="post" action="index.php#footer">
+						<?php echo $contact_status; ?>
+						<div class="row">
+							<div class="col-6 col-12-mobilep">
+								<input type="text" name="name" placeholder="Nom" required />
+							</div>
+							<div class="col-6 col-12-mobilep">
+								<input type="email" name="email" placeholder="Email" required />
+							</div>
+							<div class="col-12">
+								<textarea name="message" placeholder="Message" rows="6" required></textarea>
+							</div>
+							<div class="col-12">
+								<ul class="actions special">
+									<li><input type="submit" name="submit_contact" value="Envoyer le message" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>
+					<!-- <form method="post" action="#">
 						<div class="row">
 							<div class="col-6 col-12-mobilep">
 								<input type="text" name="name" placeholder="Nom" />
@@ -266,7 +326,7 @@
 								</ul>
 							</div>
 						</div>
-					</form>
+					</form> -->
 
                     <ul class="icons">
                         <?php
@@ -285,8 +345,8 @@
 				</div>
 
 				<div style="text-align: center; margin-top: 20px;">
-                	<a href="Admin/dashboard.php" class="button small icon solid fa-lock">Espace Admin</a>
-            	</div>
+					<a href="Admin/dashboard.php" class="button small icon solid fa-lock">Espace Admin</a>
+				</div>
 			</div>
 
 		<!-- Scripts -->

@@ -37,18 +37,7 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
-    <style>
-        .carousel-wrapper { position: relative; max-width: 100%; margin: 2em auto; border-radius: 8px; overflow: hidden; }
-        .project-carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 0; }
-        .project-carousel::-webkit-scrollbar { display: none; }
-        .project-carousel { -ms-overflow-style: none; scrollbar-width: none; }
-        .carousel-item { flex: 0 0 100%; scroll-snap-align: center; }
-        .carousel-item img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 15px 20px; cursor: pointer; font-size: 1.5em; z-index: 10; border-radius: 4px; transition: 0.3s; }
-        .carousel-btn:hover { background: rgba(0,0,0,0.8); }
-        .prev-btn { left: 10px; }
-        .next-btn { right: 10px; }
-    </style>
+    <link rel="stylesheet" href="assets/css/project.css" />
 </head>
 <body class="is-preload">
 
@@ -107,7 +96,7 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
 
     <div id="footer">
         <ul class="copyright">
-            <li>&copy; Malo Portfolio. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            <li>&copy; LE CAER MALO - Tout droit réservé.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
         </ul>
     </div>
 

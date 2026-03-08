@@ -35,12 +35,6 @@ $res_img = mysqli_query($link, $sql_img);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../assets/css/main.css" />
     <link rel="stylesheet" href="../assets/css/admin.css" />
-    <style>
-        .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
-        .img-card { border: 1px solid #ccc; padding: 10px; border-radius: 8px; text-align: center; background: #fff; }
-        .img-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; }
-        .img-card label { font-size: 0.8em; margin: 5px 0; display: block; cursor: pointer; }
-    </style>
 </head>
 <body class="is-preload">
     <div id="header">
@@ -54,7 +48,8 @@ $res_img = mysqli_query($link, $sql_img);
         <div class="box container">
             <div class="admin-block">
                 <header><h3>Édition : <?php echo htmlspecialchars($projet['title']); ?></h3></header>
-                <?php if(isset($erreur)) echo "<p class='msg-error' style='color:red;'>$erreur</p>"; ?>
+                
+                <?php if(isset($erreur)) echo "<p class='msg-error'>$erreur</p>"; ?>
 
                 <form id="update-project-form" enctype="multipart/form-data">
                     <input type="hidden" name="id_project" value="<?php echo $id_proj; ?>" />
@@ -90,15 +85,15 @@ $res_img = mysqli_query($link, $sql_img);
                         <div class="col-12">
                             <hr>
                             <label>Images actuelles (Sélectionnez la couverture ou supprimez)</label>
-                            <div class="img-grid">
+                            <div class="preview-grid">
                                 <?php while($img = mysqli_fetch_assoc($res_img)): ?>
-                                    <div class="img-card">
-                                        <img src="../<?php echo htmlspecialchars($img['image_url']); ?>" alt="">
-                                        <label style="color: #4CAF50;">
+                                    <div class="preview-card">
+                                        <img src="../<?php echo htmlspecialchars($img['image_url']); ?>" alt="" class="preview-img">
+                                        <label class="label-cover <?php echo ($img['is_main'] == 1) ? 'is-cover' : ''; ?>">
                                             <input type="radio" name="main_image" value="<?php echo $img['id']; ?>" <?php echo ($img['is_main'] == 1) ? 'checked' : ''; ?>>
                                             Couverture
                                         </label>
-                                        <label style="color: #ff4444;">
+                                        <label class="label-delete">
                                             <input type="checkbox" name="delete_images[]" value="<?php echo $img['id']; ?>">
                                             Supprimer
                                         </label>
@@ -107,15 +102,15 @@ $res_img = mysqli_query($link, $sql_img);
                             </div>
                         </div>
 
-                        <div class="col-12" style="margin-top:2em;">
-                            <label>Ajouter de nouvelles images (Drag & Drop) - <span style="color:#e44c65;">Format 16/9 recommandé</span></label>
-                            <div id="drop-area" style="border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; background: rgba(0,0,0,0.02);">
-                                <p style="margin: 0; pointer-events: none;"><i class="icon solid fa-cloud-upload-alt fa-2x"></i><br>Glissez-déposez ici</p>
+                        <div class="col-12 mt-2">
+                            <label class="drop-label">Ajouter de nouvelles images (Drag & Drop) - <span class="text-highlight">Format 16/9 recommandé</span></label>
+                            <div id="drop-area" class="drop-area">
+                                <p><i class="icon solid fa-cloud-upload-alt fa-2x"></i><br>Glissez-déposez ici</p>
                                 <input type="file" id="fileElem" multiple accept="image/*" style="display:none;">
                             </div>
-                            <p id="file-count" style="text-align:center; font-size:0.8em; color:#4CAF50; margin-top:10px; font-weight:bold;"></p>
+                            <p id="file-count" class="file-count"></p>
                             
-                            <div id="new-images-preview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; max-height: 350px; overflow-y: auto; padding: 10px; border: 1px solid #eee; border-radius: 8px;"></div>
+                            <div id="new-images-preview" class="preview-grid"></div>
                         </div>
 
                         <div class="col-12 text-right mt-1">
@@ -141,12 +136,11 @@ $res_img = mysqli_query($link, $sql_img);
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
         });
-
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#e44c65', false);
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
         });
         ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#ccc', false);
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
         });
 
         dropArea.addEventListener('drop', handleDrop, false);
@@ -172,22 +166,22 @@ $res_img = mysqli_query($link, $sql_img);
 
                 reader.onloadend = () => {
                     const div = document.createElement('div');
-                    div.className = 'img-card';
-                    div.style = 'position:relative; background: #f9f9f9;';
+                    div.className = 'preview-card';
                     
                     const img = document.createElement('img');
                     img.src = reader.result;
+                    img.className = 'preview-img';
                     
                     const removeBtn = document.createElement('button');
                     removeBtn.innerHTML = '&times;';
-                    removeBtn.style = 'position:absolute; top:-10px; right:-10px; background:#ff4444; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; padding:0;';
+                    removeBtn.className = 'btn-remove-preview';
                     removeBtn.onclick = (e) => {
                         e.preventDefault();
                         removeDroppedFile(index);
                     };
 
                     const labelNew = document.createElement('span');
-                    labelNew.style = 'font-size: 0.8em; color: #888; display:block;';
+                    labelNew.className = 'label-new';
                     labelNew.innerHTML = '<i>Nouveau fichier</i>';
 
                     div.appendChild(removeBtn);
