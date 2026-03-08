@@ -5,12 +5,13 @@ require '../includes/auth/security.php';
 
 $message = "";
 if (isset($_GET['msg'])) {
-    if ($_GET['msg'] == 'intro_updated') $message = "Introduction mise à jour !";
-    if ($_GET['msg'] == 'hero_updated') $message = "En-tête mis à jour !";
-    if ($_GET['msg'] == 'skill_added') $message = "Compétence ajoutée !";
-    if ($_GET['msg'] == 'skill_deleted') $message = "Compétence supprimée !";
+    if ($_GET['msg'] == 'intro_updated') $message = "Introduction mise à jour avec succès !";
+    if ($_GET['msg'] == 'hero_updated') $message = "En-tête mis à jour avec succès !";
+    if ($_GET['msg'] == 'skill_added') $message = "Compétence ajoutée avec succès !";
+    if ($_GET['msg'] == 'skill_deleted') $message = "Compétence supprimée avec succès !";
     if ($_GET['msg'] == 'deleted') $message = "Projet supprimé avec succès !";
     if ($_GET['msg'] == 'updated') $message = "Le projet a été mis à jour avec succès !";
+    if ($_GET['msg'] == 'project_added') $message = "Projet ajouté avec succès !";
 }
 
 // Inclusion du CRUD
@@ -23,7 +24,7 @@ require '../includes/intro_section/update.php'; // Modifier
 require '../includes/intro_section/read.php'; // Lire
 
 // Porject
-require '../includes/project/create.php'; // Ajouter avec upload d'images
+//require '../includes/project/create.php'; // Ajouter avec upload d'images
 require '../includes/project/read.php'; // Lire les projets
 require '../includes/project/delete.php'; // Supprimer
 require '../includes/categories/read.php'; // Catégories
@@ -174,7 +175,7 @@ require '../includes/socials/read.php'; // Lire
                     <header>
                         <h3>Ajouter un nouveau projet</h3>
                     </header>
-                    <form method="post" action="dashboard.php" enctype="multipart/form-data">
+                    <form id="create-project-form" enctype="multipart/form-data">
                         <div class="row gtr-50">
                             
                             <div class="col-12">
@@ -185,7 +186,6 @@ require '../includes/socials/read.php'; // Lire
                                 <select name="category_id" id="category_select" onchange="toggleCustomCategory()">
                                     <option value="">-- Choisir une catégorie --</option>
                                     <?php 
-                                    // On remplit le select avec les catégories existantes
                                     if (mysqli_num_rows($result_cat) > 0) {
                                         mysqli_data_seek($result_cat, 0);
                                         while($cat = mysqli_fetch_assoc($result_cat)) {
@@ -208,18 +208,23 @@ require '../includes/socials/read.php'; // Lire
                             <div class="col-6 col-12-mobilep">
                                 <input type="text" name="project_link" placeholder="Lien vers le site (http://...)" />
                             </div>
-                            <div class="col-6 col-12-mobilep">
-                                <label for="file" style="font-size:0.8em; color:#888;">Image de couverture</label>
-                                <input type="file" name="project_image" accept="image/*" required />
+                            <div class="col-12">
+                                <label style="font-size:0.8em; color:#888; margin-bottom: 5px; display:block;">Images du projet (Drag & Drop) - <span style="color:#e44c65;">Format 16/9 recommandé</span></label>
+                                <div id="drop-area" style="border: 2px dashed #ccc; border-radius: 8px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.02);">
+                                    <p style="margin: 0; pointer-events: none;"><i class="icon solid fa-cloud-upload-alt fa-2x"></i><br>Glissez-déposez vos images ici<br>ou cliquez pour parcourir</p>
+                                    <input type="file" id="fileElem" multiple accept="image/*" style="display:none;">
+                                </div>
+                                <p id="file-count" style="text-align:center; font-size:0.8em; color:#4CAF50; margin-top:10px; font-weight:bold;"></p>
+                                
+                                <div id="preview-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; max-height: 350px; overflow-y: auto; padding: 10px; border: 1px solid #eee; border-radius: 8px;"></div>
                             </div>
-
                             <div class="col-12 text-right mt-1">
-                                <input type="submit" name="add_project" value="Publier le projet" class="btn-wide primary" />
+                                <input type="submit" value="Publier le projet" class="btn-wide primary" />
                             </div>
                         </div>
                     </form>
                 </div>
-            </div> 
+            </div>
 
             <button class="accordion-header">Gestion des Compétences</button>
             <div class="accordion-panel">
@@ -329,10 +334,7 @@ require '../includes/socials/read.php'; // Lire
                                         <input type="text" name="urls[<?php echo $row['id']; ?>]" value="<?php echo htmlspecialchars($row['url']); ?>" />
                                     </div>
                                     <div class="col-1 col-12-mobilep text-center">
-                                        <a href="dashboard.php?delete=<?php echo $row['id']; ?>" 
-                                           class="icon solid fa-trash action-btn" 
-                                           onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');"
-                                           title="Supprimer">
+                                        <a href="dashboard.php?delete=<?php echo $row['id']; ?>" class="icon solid fa-trash action-btn" onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');"title="Supprimer">
                                         </a>
                                     </div>
                                 </div>
@@ -394,7 +396,7 @@ require '../includes/socials/read.php'; // Lire
                     panel.classList.remove("open");
                 } else {
                     panel.classList.add("open");
-                    panel.style.maxHeight = "1500px"; 
+                    panel.style.maxHeight = "5000px";
                 } 
             });
         }
@@ -412,6 +414,131 @@ require '../includes/socials/read.php'; // Lire
                 document.querySelector('input[name="new_category_label"]').required = false;
             }
         }
+
+        // Gestion du drag and drop et preview via AJAX
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('fileElem');
+        const fileCount = document.getElementById('file-count');
+        const previewContainer = document.getElementById('preview-container');
+        const createForm = document.getElementById('create-project-form');
+
+        let droppedFiles = []; 
+        let coverIndex = 0;   
+
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#e44c65', false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#ccc', false);
+        });
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', handleSelect, false);
+
+        function handleDrop(e) { handleFiles(e.dataTransfer.files); }
+        function handleSelect(e) { handleFiles(e.target.files); }
+
+        function handleFiles(files) {
+            files = [...files];
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            droppedFiles = [...droppedFiles, ...imageFiles];
+            updatePreview();
+        }
+
+        function updatePreview() {
+            previewContainer.innerHTML = '';
+            fileCount.textContent = droppedFiles.length > 0 ? droppedFiles.length + " image(s) sélectionnée(s)" : "";
+
+            droppedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onloadend = () => {
+                    const div = document.createElement('div');
+                    div.className = 'img-card';
+                    div.style = 'border: 1px solid #ccc; padding: 10px; border-radius: 8px; text-align: center; background: #fff; position:relative;';
+                    
+                    const img = document.createElement('img');
+                    img.src = reader.result;
+                    img.style = 'width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 5px;';
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.style = 'position:absolute; top:-10px; right:-10px; background:#ff4444; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; padding:0;';
+                    removeBtn.onclick = (e) => {
+                        e.preventDefault();
+                        removeDroppedFile(index);
+                    };
+
+                    const labelCover = document.createElement('label');
+                    labelCover.style = 'font-size: 0.8em; color: #4CAF50; cursor:pointer; display:block;';
+                    if(index === coverIndex) {
+                        labelCover.style.fontWeight = 'bold';
+                        labelCover.innerHTML = '<i class="icon solid fa-star"></i> Couverture';
+                    } else {
+                        labelCover.innerHTML = '<i class="icon regular fa-star"></i> En couverture';
+                    }
+                    
+                    labelCover.onclick = (e) => {
+                        e.preventDefault();
+                        coverIndex = index;
+                        updatePreview(); 
+                    };
+
+                    div.appendChild(removeBtn);
+                    div.appendChild(img);
+                    div.appendChild(labelCover);
+                    previewContainer.appendChild(div);
+                };
+            });
+        }
+
+        function removeDroppedFile(index) {
+            droppedFiles.splice(index, 1);
+            if (index === coverIndex) coverIndex = 0;
+            else if (index < coverIndex) coverIndex--;
+            updatePreview();
+        }
+
+        createForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const formData = new FormData(createForm);
+            formData.append('main_image_index', coverIndex);
+            
+            droppedFiles.forEach(file => {
+                formData.append('project_images[]', file);
+            });
+
+            const submitBtn = createForm.querySelector('input[type="submit"]');
+            submitBtn.value = "Publication en cours...";
+            submitBtn.disabled = true;
+
+            fetch('../includes/project/create.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    window.location.href = 'dashboard.php?msg=project_added';
+                } else {
+                    alert('Erreur : ' + data.message);
+                    submitBtn.value = "Publier le projet";
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('Erreur réseau ou serveur : ' + error);
+                submitBtn.value = "Publier le projet";
+                submitBtn.disabled = false;
+            });
+        });
     </script>
 
 </body>

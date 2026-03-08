@@ -51,7 +51,7 @@
 				<header class="major container medium">
 					<h2><?php echo nl2br(htmlspecialchars($intro['title'])); ?></h2>
                     <?php if(!empty($intro['description'])): ?>
-					    <p><?php echo nl2br(htmlspecialchars($intro['description'])); ?></p>
+						<p><?php echo nl2br(htmlspecialchars($intro['description'])); ?></p>
                     <?php endif; ?>
 				</header>
 

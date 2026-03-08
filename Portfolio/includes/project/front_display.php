@@ -6,7 +6,7 @@ function afficherProjets($link) {
             p.title, 
             p.description, 
             c.label AS category_name,
-            (SELECT image_url FROM project_images WHERE project_id = p.id LIMIT 1) AS main_image
+            (SELECT image_url FROM project_images WHERE project_id = p.id AND is_main = 1 LIMIT 1) AS main_image
         FROM projects p
         LEFT JOIN categories c ON p.category_id = c.id
         ORDER BY p.publish_date DESC

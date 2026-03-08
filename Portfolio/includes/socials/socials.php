@@ -15,7 +15,7 @@ function afficherSocials() {
                     <a href='$url' class='icon brands fa-$name' target='_blank'>
                         <span class='label'>$name</span>
                     </a>
-                  </li>";
+                </li>";
         }
         mysqli_free_result($result);
     } else {

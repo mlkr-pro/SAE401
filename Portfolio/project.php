@@ -9,12 +9,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id_projet = (int)$_GET['id'];
 
 $sql_projet = "
-    SELECT 
-        p.title, 
-        p.description, 
-        p.project_link, 
-        p.publish_date, 
-        c.label AS category_name
+    SELECT p.title, p.description, p.project_link, p.publish_date, c.label AS category_name
     FROM projects p
     LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.id = $id_projet
@@ -27,7 +22,7 @@ if (!$projet) {
     exit;
 }
 
-$sql_images = "SELECT image_url FROM project_images WHERE project_id = $id_projet";
+$sql_images = "SELECT image_url FROM project_images WHERE project_id = $id_projet ORDER BY is_main DESC, id ASC";
 $result_images = mysqli_query($link, $sql_images);
 $images = [];
 while ($row_img = mysqli_fetch_assoc($result_images)) {
@@ -42,6 +37,18 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
+    <style>
+        .carousel-wrapper { position: relative; max-width: 100%; margin: 2em auto; border-radius: 8px; overflow: hidden; }
+        .project-carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 0; }
+        .project-carousel::-webkit-scrollbar { display: none; }
+        .project-carousel { -ms-overflow-style: none; scrollbar-width: none; }
+        .carousel-item { flex: 0 0 100%; scroll-snap-align: center; }
+        .carousel-item img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 15px 20px; cursor: pointer; font-size: 1.5em; z-index: 10; border-radius: 4px; transition: 0.3s; }
+        .carousel-btn:hover { background: rgba(0,0,0,0.8); }
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+    </style>
 </head>
 <body class="is-preload">
 
@@ -63,20 +70,22 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
                 </header>
 
                 <?php if (!empty($images)): ?>
-                    <div class="box alt">
-                        <div class="row gtr-50 uniform">
-                            <?php if (count($images) == 1): ?>
-                                <div class="col-12">
-                                    <span class="image fit"><img src="<?php echo htmlspecialchars($images[0]); ?>" alt="" /></span>
+                    <div class="carousel-wrapper">
+                        <?php if(count($images) > 1): ?>
+                            <button class="carousel-btn prev-btn" id="prevBtn">&#10094;</button>
+                        <?php endif; ?>
+                        
+                        <div class="project-carousel" id="carouselTrack">
+                            <?php foreach ($images as $img_path): ?>
+                                <div class="carousel-item">
+                                    <img src="<?php echo htmlspecialchars($img_path); ?>" alt="Image du projet" />
                                 </div>
-                            <?php else: ?>
-                                <?php foreach ($images as $img_path): ?>
-                                    <div class="col-6 col-12-mobilep">
-                                        <span class="image fit"><img src="<?php echo htmlspecialchars($img_path); ?>" alt="" /></span>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                            <?php endforeach; ?>
                         </div>
+
+                        <?php if(count($images) > 1): ?>
+                            <button class="carousel-btn next-btn" id="nextBtn">&#10095;</button>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
 
@@ -108,5 +117,49 @@ while ($row_img = mysqli_fetch_assoc($result_images)) {
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
 
+    <?php if(count($images) > 1): ?>
+    <script>
+        const track = document.getElementById('carouselTrack');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const items = document.querySelectorAll('.carousel-item');
+        let autoScroll;
+
+        function scrollToIndex(index) {
+            track.scrollTo({ left: items[index].offsetLeft, behavior: 'smooth' });
+        }
+
+        function getNextIndex() {
+            let currentIndex = Math.round(track.scrollLeft / track.clientWidth);
+            return (currentIndex + 1) >= items.length ? 0 : currentIndex + 1;
+        }
+
+        function getPrevIndex() {
+            let currentIndex = Math.round(track.scrollLeft / track.clientWidth);
+            return (currentIndex - 1) < 0 ? items.length - 1 : currentIndex - 1;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            scrollToIndex(getNextIndex());
+            resetAutoScroll();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            scrollToIndex(getPrevIndex());
+            resetAutoScroll();
+        });
+
+        function startAutoScroll() {
+            autoScroll = setInterval(() => scrollToIndex(getNextIndex()), 4000); // Défilement toutes les 4s
+        }
+
+        function resetAutoScroll() {
+            clearInterval(autoScroll);
+            startAutoScroll();
+        }
+
+        startAutoScroll();
+    </script>
+    <?php endif; ?>
 </body>
 </html>
