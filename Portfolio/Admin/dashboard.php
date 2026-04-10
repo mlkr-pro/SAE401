@@ -17,34 +17,37 @@ if (isset($_GET['msg'])) {
 
 // Inclusion du CRUD
 // Hero
-require '../includes/hero/update.php'; // Modifier
-require '../includes/hero/read.php'; // Lire
+require_once '../includes/hero/update.php'; // Modifier
+require_once '../includes/hero/read.php'; // Lire
 
 // Intro
-require '../includes/intro_section/update.php'; // Modifier
-require '../includes/intro_section/read.php'; // Lire
+require_once '../includes/intro_section/update.php'; // Modifier
+require_once '../includes/intro_section/read.php'; // Lire
 
 // Compétences
-require '../includes/skills/create.php'; // Ajouter
-require '../includes/skills/update.php'; // Modifier
-require '../includes/skills/read.php'; // Lire
-require '../includes/skills/delete.php'; // Supprimer
+require_once '../includes/skills/create.php'; // Ajouter
+require_once '../includes/skills/update.php'; // Modifier
+require_once '../includes/skills/read.php'; // Lire
+require_once '../includes/skills/delete.php'; // Supprimer
 
 // Porject
-//require '../includes/project/create.php'; // Ajouter avec upload d'images
-require '../includes/project/read.php'; // Lire les projets
-require '../includes/project/delete.php'; // Supprimer
-require '../includes/categories/read.php'; // Catégories
+//require_once '../includes/project/create.php'; // Ajouter avec upload d'images
+require_once '../includes/project/read.php'; // Lire les projets
+require_once '../includes/project/delete.php'; // Supprimer
+require_once '../includes/categories/read.php'; // Catégories
 
 // Messages
-require '../includes/messages/delete.php'; // Supprimer
-require '../includes/messages/read.php'; // Lire
+require_once '../includes/messages/delete.php'; // Supprimer
+require_once '../includes/messages/read.php'; // Lire
 
 // Socials
-require '../includes/socials/delete.php'; // Supprimer
-require '../includes/socials/create.php'; // Ajouter
-require '../includes/socials/update.php'; // Modifier
-require '../includes/socials/read.php'; // Lire
+// require_once '../includes/socials/delete.php'; // Supprimer
+// require_once '../includes/socials/create.php'; // Ajouter
+// require_once '../includes/socials/update.php'; // Modifier
+// require_once '../includes/socials/read.php'; // Lire
+require_once '../includes/socials/Social.php';
+require_once '../includes/socials/controll.php';
+
 ?>
 
 <!DOCTYPE HTML>
@@ -372,10 +375,9 @@ require '../includes/socials/read.php'; // Lire
                         </div>
 
                         <?php
-                        if (mysqli_num_rows($result) > 0) {
-                            mysqli_data_seek($result, 0); 
-                            while ($row = mysqli_fetch_assoc($result)) {
-                        ?>
+                        if (!empty($socials)) {
+                            foreach ($socials as $row) {
+                                ?>
                                 <div class="row gtr-50 aln-middle social-row">
                                     <div class="col-3 col-12-mobilep">
                                         <div class="network-label">
@@ -387,55 +389,52 @@ require '../includes/socials/read.php'; // Lire
                                         <input type="text" name="urls[<?php echo $row['id']; ?>]" value="<?php echo htmlspecialchars($row['url']); ?>" />
                                     </div>
                                     <div class="col-1 col-12-mobilep text-center">
-                                        <a href="dashboard.php?delete=<?php echo $row['id']; ?>" class="icon solid fa-trash action-btn btn-delete" onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');" title="Supprimer"></a>
+                                        <a href="dashboard.php?delete_social=<?php echo $row['id']; ?>" class="icon solid fa-trash action-btn btn-delete" onclick="return confirm('Voulez-vous vraiment supprimer ce réseau ?');" title="Supprimer"></a>
                                     </div>
                                 </div>
-                        <?php
-                            }
-                        } else {
-                            echo "<p class='text-center p-4'>Aucun réseau configuré.</p>";
-                        }
-                        ?>
-                        
-                        <?php if (mysqli_num_rows($result) > 0): ?>
-                        <div class="row">
-                            <div class="col-12 text-right mt-2">
-                                <input type="submit" name="update_socials" value="Enregistrer les modifications" class="btn-wide" />
+                                <?php
+                                }
+                                } else {
+                                    echo "<p class='text-center p-4'>Aucun réseau configuré.</p>";
+                                }
+                                ?>
+                                
+                                <?php if (!empty($socials)): ?>
+                                    <div class="row">
+                                        <div class="col-12 text-right mt-2">
+                                            <input type="submit" name="update_socials" value="Enregistrer les modifications" class="btn-wide" />
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
+                                </form>
+                            </div>
+                            
+                            <div class="admin-block">
+                                <header>
+                                    <h3>Ajouter un nouveau réseau</h3>
+                                </header>
+                                <form method="post" action="dashboard.php">
+                                    <div class="row gtr-50">
+                                        <div class="col-4 col-12-mobilep">
+                                            <input type="text" name="new_name" placeholder="Nom (ex: github)" required />
+                                        </div>
+                                        <div class="col-8 col-12-mobilep">
+                                            <input type="text" name="new_url" placeholder="Lien URL (ex: https://...)" required />
+                                        </div>
+                                        <div class="col-12 text-right mt-1">
+                                            <input type="submit" name="add_social" value="Ajouter" class="btn-wide primary" />
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        <?php endif; ?>
-                    </form>
+                    </div>
                 </div>
-                <div class="admin-block">
-                    <header>
-                        <h3>Ajouter un nouveau réseau</h3>
-                    </header>
-                    <form method="post" action="dashboard.php">
-                        <div class="row gtr-50">
-                            <div class="col-6 col-12-mobilep">
-                                <input type="text" name="new_name" placeholder="Nom (ex: instagram)" required />
-                            </div>
-            
-                            <div class="col-6 col-12-mobilep">
-                                <input type="text" name="new_url" placeholder="URL (https://...)" required />
-                            </div>
-            
-                            <div class="col-12 text-right mt-1">
-                                <input type="submit" name="add_social" value="Ajouter" class="btn-wide" />
-                            </div>
-                        </div>
-                    </form>
+                <div id="footer">
+                    <ul class="copyright">
+                        <li>&copy; LE CAER MALO - Tout droit réservé.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                    </ul>
                 </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="footer">
-        <ul class="copyright">
-            <li>&copy; LE CAER MALO - Tout droit réservé.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-        </ul>
-    </div>
 
     <script>
         var acc = document.getElementsByClassName("accordion-header");
@@ -571,7 +570,7 @@ require '../includes/socials/read.php'; // Lire
             submitBtn.value = "Publication en cours...";
             submitBtn.disabled = true;
 
-            fetch('../includes/project/ajax_create.php', {
+            fetch('../includes/project/create.php', {
                 method: 'POST',
                 body: formData
             })
